@@ -11,10 +11,11 @@ Use
 Dependencies
     Python 2.7
     PIL
-    images2gif.py [included]
     matplotlib
     numpy
+    images2gif.py
 '''
+
 import time
 import numpy
 import PIL
@@ -24,33 +25,31 @@ import os
 import images2gif
 
 def visualize(display):
-    '''
-    display: = "gif" or "png" or "plot"
-    '''
     matplotlib.pyplot.ion()
-    npframes = numpy.load("output.npy")
+    npframes = numpy.load("data/output.npy")
     xs = range(npframes[0].shape[0]+1)
     ys = range(npframes[0].shape[1]+1)
     X,Y = numpy.meshgrid(xs,ys)
     dataList = matplotlib.pyplot.pcolormesh(X,Y,npframes[0],cmap="hot")
     images = list()
     for i in range(1,len(npframes)):
-        thisFig = "figure"+str(i)+".png"
+        thisFig = "img/figure"+str(i)+".png"
         dataList.set_array(npframes[i].ravel())
         dataList.autoscale()
-        if display == ("png" or "gif"):
+        if display == "png":
             matplotlib.pyplot.savefig(thisFig)
         if display == "gif":
+            matplotlib.pyplot.savefig(thisFig)
             images.append(PIL.Image.open(thisFig))
             os.remove(thisFig)
         if display == "plot":
             matplotlib.pyplot.draw()
             time.sleep(0.025)
     if display == "gif":
-        animName = "output_gif.gif"
+        animName = "img/output_gif.gif"
         images2gif.writeGif(filename=animName, images=images, duration=0.1, repeat=True)
     print("visualization successful")
-    return
+    return "True"
 
 if __name__ == "__main__":
-    visualize()
+    visualize("png")
