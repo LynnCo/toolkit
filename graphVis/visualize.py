@@ -24,15 +24,39 @@ import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import os
 import sys
+import glob
 import images2gif
 
 def visualize(display):
+
+    #data selection
+    npframes = "none"
+    dataContent = glob.glob("data/*.npy")
+    if len(dataContent) > 1:
+        print("Please select a file")
+        for i,val in enumerate(dataContent):
+            print(str(i)+": "+str(val))
+        choice = int(input("file number: "))
+        if choice >= len(dataContent):
+            print("invalid file choice")
+            return "False"
+        else:
+            npframes = numpy.load(dataContent[choice])
+    elif len(dataContent) == 1:
+        print("using "+str(dataContent[0]))
+        npframes = numpy.load(dataContent[0])
+    elif not dataContent:
+        print("Please place a .npy file into /data")
+        return "False"
+
+    #create plot frame
     plt.ion()
-    npframes = numpy.load("data/output.npy")
     xs = range(npframes[0].shape[0]+1)
     ys = range(npframes[0].shape[1]+1)
     X,Y = numpy.meshgrid(xs,ys)
     dataList = plt.pcolormesh(X,Y,npframes[0],cmap="hot")
+
+    #work over data
     images = list()
     for i in range(1,len(npframes)):
         thisFig = "img/figure"+str(i)+".jpg"
